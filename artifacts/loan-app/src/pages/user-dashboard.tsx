@@ -12,20 +12,15 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
-import { DollarSign, Calendar, Clock } from "lucide-react";
+import { DollarSign, Clock } from "lucide-react";
 
 const requestLoanSchema = z.object({
   monto: z.coerce.number().positive("El monto debe ser mayor a 0"),
-  plazo: z.coerce.number().int().positive("El plazo debe ser un número entero mayor a 0"),
 });
 
 function StatusBadge({ estado }: { estado: LoanEstado }) {
-  if (estado === "APROBADO") {
-    return <Badge variant="success">Aprobado</Badge>;
-  }
-  if (estado === "RECHAZADO") {
-    return <Badge variant="destructive">Rechazado</Badge>;
-  }
+  if (estado === "APROBADO") return <Badge variant="success">Aprobado</Badge>;
+  if (estado === "RECHAZADO") return <Badge variant="destructive">Rechazado</Badge>;
   return <Badge variant="warning">Pendiente</Badge>;
 }
 
@@ -39,36 +34,28 @@ export default function UserDashboard() {
 
   const form = useForm<z.infer<typeof requestLoanSchema>>({
     resolver: zodResolver(requestLoanSchema),
-    defaultValues: { monto: 0, plazo: 12 },
+    defaultValues: { monto: 0 },
   });
 
   const requestLoanMutation = useRequestLoan({
     mutation: {
       onSuccess: () => {
-        toast({
-          title: "Préstamo solicitado",
-          description: "Su solicitud ha sido enviada correctamente.",
-        });
+        toast({ title: "Préstamo solicitado", description: "Su solicitud ha sido enviada correctamente." });
         form.reset();
         queryClient.invalidateQueries({ queryKey: getGetMyLoansQueryKey() });
       },
       onError: () => {
-        toast({
-          title: "Error",
-          description: "Hubo un problema al solicitar el préstamo.",
-          variant: "destructive",
-        });
+        toast({ title: "Error", description: "Hubo un problema al solicitar el préstamo.", variant: "destructive" });
       }
     }
   });
 
   const onSubmit = (values: z.infer<typeof requestLoanSchema>) => {
-    requestLoanMutation.mutate({ data: values });
+    requestLoanMutation.mutate({ data: { monto: values.monto, plazo: 0 } });
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(amount);
-  };
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(amount);
 
   const formatDate = (dateString: string) => {
     try {
@@ -93,9 +80,7 @@ export default function UserDashboard() {
                 <DollarSign className="w-5 h-5 text-primary" />
                 Nuevo Préstamo
               </CardTitle>
-              <CardDescription>
-                Complete el formulario para solicitar un préstamo.
-              </CardDescription>
+              <CardDescription>Ingrese el monto que desea solicitar.</CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
               <Form {...form}>
@@ -116,27 +101,9 @@ export default function UserDashboard() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="plazo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Plazo (Meses)</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <span className="absolute left-3 top-2.5 text-muted-foreground">
-                              <Calendar className="w-4 h-4" />
-                            </span>
-                            <Input type="number" placeholder="12" className="pl-9" {...field} />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button 
-                    type="submit" 
-                    className="w-full mt-4" 
+                  <Button
+                    type="submit"
+                    className="w-full mt-4"
                     disabled={requestLoanMutation.isPending}
                   >
                     {requestLoanMutation.isPending ? "Procesando..." : "Solicitar Préstamo"}
@@ -154,28 +121,17 @@ export default function UserDashboard() {
                 <Clock className="w-5 h-5 text-primary" />
                 Mis Préstamos
               </CardTitle>
-              <CardDescription>
-                Historial de sus solicitudes recientes.
-              </CardDescription>
+              <CardDescription>Historial de sus solicitudes recientes.</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               {isLoading ? (
                 <div className="p-8 text-center text-muted-foreground">Cargando préstamos...</div>
-              ) : loans.length === 0 ? (
-                <div className="p-12 text-center">
-                  <div className="mx-auto bg-muted w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                    <DollarSign className="w-6 h-6 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-lg font-medium text-foreground">Aún no tiene préstamos</h3>
-                  <p className="text-muted-foreground mt-1">Sus solicitudes aparecerán aquí.</p>
-                </div>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/10 hover:bg-muted/10">
                       <TableHead>Fecha</TableHead>
                       <TableHead className="text-right">Monto</TableHead>
-                      <TableHead className="text-center">Plazo</TableHead>
                       <TableHead className="text-center">Estado</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -184,7 +140,6 @@ export default function UserDashboard() {
                       <TableRow key={loan.id}>
                         <TableCell className="font-medium">{formatDate(loan.fechaSolicitud)}</TableCell>
                         <TableCell className="text-right">{formatCurrency(loan.monto)}</TableCell>
-                        <TableCell className="text-center">{loan.plazo} m</TableCell>
                         <TableCell className="text-center">
                           <StatusBadge estado={loan.estado} />
                         </TableCell>
