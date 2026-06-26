@@ -1,0 +1,173 @@
+Actúa como un desarrollador Full Stack Java + React que está realizando una prueba técnica con un límite estricto de 3 horas.
+No quiero una solución idealizada ni un proyecto con características propias de varios días de desarrollo. Quiero una implementación realista, como la que entregaría un buen desarrollador al finalizar una prueba técnica en ese tiempo.
+Contexto
+La aplicación corresponde a una prueba técnica de Spring Boot + React.
+Debes respetar estrictamente los requerimientos del documento.
+Sin embargo, debes priorizar la entrega de un sistema completo, funcional, limpio y bien organizado, antes que intentar implementar absolutamente todas las recomendaciones del documento.
+La prioridad es demostrar conocimientos técnicos y buenas prácticas, no construir un producto listo para producción.
+Restricción más importante
+No agregues funcionalidades que el documento no solicita.
+No implementes:
+Registro de usuarios.
+Recuperación de contraseña.
+Edición de perfil.
+Gestión de cuentas bancarias.
+Historiales complejos.
+Notificaciones.
+Dashboard con estadísticas.
+Funcionalidades administrativas adicionales.
+Cualquier pantalla que no aparezca en el documento.
+Debes seguir las imágenes del documento como referencia para el diseño y el flujo de navegación.
+Tecnologías
+Backend
+Java
+Spring Boot
+Spring Data JPA
+Spring Security
+JWT
+Hibernate Validator
+Maven
+Base de datos H2
+Frontend
+React
+React Router
+Axios
+Context API
+CSS
+Base de datos
+Usar únicamente H2.
+Configurar:
+schema.sql si es necesario
+data.sql
+Precargar:
+Administrador
+admin@test.com
+123
+ROLE_ADMIN
+Usuario
+usuario@test.com
+123
+ROLE_USER
+Objetivo principal
+Debe existir un flujo completamente funcional.
+Login
+Autenticación mediante JWT.
+El usuario inicia sesión.
+Dependiendo del rol, accede a su vista correspondiente.
+Usuario
+Puede:
+solicitar préstamo
+consultar estado de sus préstamos
+Nada más.
+Administrador
+Puede:
+visualizar solicitudes
+aprobar préstamo
+rechazar préstamo
+Nada más.
+Préstamos
+Cada préstamo debe contener al menos:
+id
+monto
+plazo
+fechaSolicitud
+estado
+Estados:
+PENDIENTE
+APROBADO
+RECHAZADO
+Arquitectura
+No es necesario implementar una arquitectura hexagonal extremadamente compleja.
+Una estructura clásica de Spring Boot es suficiente siempre que exista una buena separación de responsabilidades.
+Ejemplo:
+controller
+
+service
+
+repository
+
+entity
+
+dto
+
+security
+
+config
+
+exception
+Mantener el código limpio.
+Aplicar principios SOLID cuando sea posible.
+Seguridad
+Implementar Spring Security con JWT.
+Restringir:
+ADMIN
+aprobar préstamo
+rechazar préstamo
+USER
+solicitar préstamo
+consultar únicamente sus préstamos
+Validaciones
+Backend
+Usar Hibernate Validator para:
+monto obligatorio
+monto positivo
+plazo obligatorio
+plazo positivo
+Frontend
+Validaciones básicas antes de enviar el formulario.
+Manejo de errores
+Implementar un controlador global de excepciones sencillo utilizando @RestControllerAdvice.
+Responder con códigos HTTP apropiados.
+No es necesario construir un sistema complejo de auditoría.
+Frontend
+Construir únicamente tres pantallas.
+Login
+Campos:
+email
+password
+Botón Login.
+Usuario
+Formulario:
+Monto
+Plazo
+Botón Solicitar
+Tabla de préstamos:
+Monto
+Plazo
+Estado
+Fecha
+Administrador
+Tabla de solicitudes.
+Botón Aprobar.
+Botón Rechazar.
+Diseño
+El diseño debe parecerse a las imágenes del documento.
+Debe ser:
+limpio
+sencillo
+moderno
+No invertir tiempo en animaciones ni efectos visuales.
+La prioridad es la funcionalidad.
+Qué simplificar por tiempo
+Dado que esta es una prueba de aproximadamente tres horas, puedes simplificar razonablemente algunos aspectos siempre que la funcionalidad principal esté completa.
+Por ejemplo:
+Utilizar Context API en lugar de Redux.
+Implementar DTOs únicamente donde aporten claridad.
+Mantener una arquitectura por capas en lugar de una hexagonal completa.
+Crear un conjunto pequeño de pruebas unitarias para la lógica más importante.
+Implementar una solución de caché sencilla (por ejemplo, Caffeine con @Cacheable) si el tiempo lo permite; si no, dejar la configuración preparada y documentar que fue omitida por limitaciones de tiempo.
+Estas simplificaciones deben ser coherentes con un desarrollo realizado bajo presión y no afectar el funcionamiento principal.
+Calidad esperada
+Priorizar:
+Proyecto que compile sin errores.
+Backend completamente funcional.
+Login funcionando.
+JWT funcionando.
+Roles funcionando.
+CRUD básico de préstamos.
+Frontend consumiendo la API.
+Validaciones.
+Código limpio.
+Es preferible entregar un proyecto completamente funcional con algunas características secundarias simplificadas, que intentar implementar todos los requerimientos y dejar una aplicación incompleta.
+Resultado esperado
+Genera un proyecto que represente fielmente lo que un desarrollador Full Stack competente podría construir durante una prueba técnica de aproximadamente tres horas, utilizando Spring Boot, React y H2, cumpliendo los requerimientos funcionales esenciales, manteniendo buenas prácticas de programación y evitando funcionalidades no solicitadas. Documenta brevemente, en el README.md, las decisiones de simplificación adoptadas debido al tiempo disponible.

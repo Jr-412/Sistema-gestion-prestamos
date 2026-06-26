@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "JRPrestamos"
+version = "1.0.0"
+id = "artifacts/loan-app"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19058
+
+[services.development]
+run = "pnpm --filter @workspace/loan-app run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/loan-app", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/loan-app/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19058"
+BASE_PATH = "/"

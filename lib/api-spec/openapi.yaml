@@ -3,20 +3,23 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Loan Management API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: loans
+    description: Loan operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,7 +27,153 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Authenticate user and get JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthToken"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /loans:
+    get:
+      operationId: getAllLoans
+      tags: [loans]
+      summary: Get all loans (ADMIN only)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of all loans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Loan"
+        "403":
+          description: Forbidden
+    post:
+      operationId: requestLoan
+      tags: [loans]
+      summary: Request a new loan (USER only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoanRequest"
+      responses:
+        "201":
+          description: Loan created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Loan"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+
+  /loans/my:
+    get:
+      operationId: getMyLoans
+      tags: [loans]
+      summary: Get loans for the authenticated user (USER only)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of user's loans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Loan"
+        "403":
+          description: Forbidden
+
+  /loans/{id}/approve:
+    put:
+      operationId: approveLoan
+      tags: [loans]
+      summary: Approve a loan (ADMIN only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Loan approved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Loan"
+        "404":
+          description: Loan not found
+        "403":
+          description: Forbidden
+
+  /loans/{id}/reject:
+    put:
+      operationId: rejectLoan
+      tags: [loans]
+      summary: Reject a loan (ADMIN only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Loan rejected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Loan"
+        "404":
+          description: Loan not found
+        "403":
+          description: Forbidden
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     HealthStatus:
       type: object
@@ -34,3 +183,79 @@ components:
       required:
         - status
 
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AuthToken:
+      type: object
+      properties:
+        token:
+          type: string
+        role:
+          type: string
+          enum: [ROLE_ADMIN, ROLE_USER]
+        email:
+          type: string
+      required:
+        - token
+        - role
+        - email
+
+    LoanRequest:
+      type: object
+      properties:
+        monto:
+          type: number
+          description: Loan amount
+        plazo:
+          type: integer
+          description: Loan term in months
+      required:
+        - monto
+        - plazo
+
+    Loan:
+      type: object
+      properties:
+        id:
+          type: integer
+        monto:
+          type: number
+        plazo:
+          type: integer
+        fechaSolicitud:
+          type: string
+          format: date-time
+        estado:
+          type: string
+          enum: [PENDIENTE, APROBADO, RECHAZADO]
+        userEmail:
+          type: string
+      required:
+        - id
+        - monto
+        - plazo
+        - fechaSolicitud
+        - estado
+        - userEmail
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+      required:
+        - message
