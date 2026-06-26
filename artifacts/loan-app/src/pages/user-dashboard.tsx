@@ -51,7 +51,7 @@ export default function UserDashboard() {
   });
 
   const onSubmit = (values: z.infer<typeof requestLoanSchema>) => {
-    requestLoanMutation.mutate({ data: { monto: values.monto, plazo: 0 } });
+    requestLoanMutation.mutate({ data: { monto: values.monto } });
   };
 
   const formatCurrency = (amount: number) =>

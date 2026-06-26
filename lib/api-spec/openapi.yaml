@@ -3,31 +3,18 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: Loan Management API
+  description: Loan Management API - JRPrestamos (Spring Boot Backend)
 servers:
   - url: /api
-    description: Base API path
+    description: Base API path (Spring Boot context-path)
 tags:
-  - name: health
-    description: Health operations
   - name: auth
     description: Authentication
   - name: loans
-    description: Loan operations
+    description: Loan operations (user)
+  - name: admin
+    description: Admin loan management
 paths:
-  /healthz:
-    get:
-      operationId: healthCheck
-      tags: [health]
-      summary: Health check
-      responses:
-        "200":
-          description: Healthy
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/HealthStatus"
-
   /auth/login:
     post:
       operationId: login
@@ -54,23 +41,6 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 
   /loans:
-    get:
-      operationId: getAllLoans
-      tags: [loans]
-      summary: Get all loans (ADMIN only)
-      security:
-        - bearerAuth: []
-      responses:
-        "200":
-          description: List of all loans
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Loan"
-        "403":
-          description: Forbidden
     post:
       operationId: requestLoan
       tags: [loans]
@@ -103,7 +73,7 @@ paths:
     get:
       operationId: getMyLoans
       tags: [loans]
-      summary: Get loans for the authenticated user (USER only)
+      summary: Get loans for the authenticated user
       security:
         - bearerAuth: []
       responses:
@@ -118,10 +88,29 @@ paths:
         "403":
           description: Forbidden
 
-  /loans/{id}/approve:
+  /admin/loans:
+    get:
+      operationId: getAllLoans
+      tags: [admin]
+      summary: Get all loans (ADMIN only)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of all loans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Loan"
+        "403":
+          description: Forbidden
+
+  /admin/loans/{id}/approve:
     put:
       operationId: approveLoan
-      tags: [loans]
+      tags: [admin]
       summary: Approve a loan (ADMIN only)
       security:
         - bearerAuth: []
@@ -143,10 +132,10 @@ paths:
         "403":
           description: Forbidden
 
-  /loans/{id}/reject:
+  /admin/loans/{id}/reject:
     put:
       operationId: rejectLoan
-      tags: [loans]
+      tags: [admin]
       summary: Reject a loan (ADMIN only)
       security:
         - bearerAuth: []
@@ -175,14 +164,6 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    HealthStatus:
-      type: object
-      properties:
-        status:
-          type: string
-      required:
-        - status
-
     LoginRequest:
       type: object
       properties:
@@ -218,10 +199,9 @@ components:
           description: Loan amount
         plazo:
           type: integer
-          description: Loan term in months
+          description: Loan term in months (optional)
       required:
         - monto
-        - plazo
 
     Loan:
       type: object
@@ -232,6 +212,7 @@ components:
           type: number
         plazo:
           type: integer
+          nullable: true
         fechaSolicitud:
           type: string
           format: date-time
@@ -243,7 +224,6 @@ components:
       required:
         - id
         - monto
-        - plazo
         - fechaSolicitud
         - estado
         - userEmail

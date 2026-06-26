@@ -1,5 +1,5 @@
 kind = "api"
-previewPath = "/api" # TODO - should be excluded from preview in the first place
+previewPath = "/api"
 title = "API Server"
 version = "1.0.0"
 id = "3B4_FFSkEVBkAeYMFRJ2e"
@@ -10,23 +10,15 @@ name = "API Server"
 paths = ["/api"]
 
 [services.development]
-run = "pnpm --filter @workspace/api-server run dev"
+run = "mvn -f /home/runner/workspace/backend/pom.xml spring-boot:run -q"
 
 [services.production]
 
 [services.production.build]
-args = ["pnpm", "--filter", "@workspace/api-server", "run", "build"]
-
-[services.production.build.env]
-NODE_ENV = "production"
+args = ["bash", "-c", "mvn -f /home/runner/workspace/backend/pom.xml package -DskipTests -q"]
 
 [services.production.run]
-# we don't run through pnpm to make startup faster in production
-args = ["node", "--enable-source-maps", "artifacts/api-server/dist/index.mjs"]
-
-[services.production.run.env]
-PORT = "8080"
-NODE_ENV = "production"
+args = ["bash", "-c", "java -jar /home/runner/workspace/backend/target/backend-0.0.1-SNAPSHOT.jar"]
 
 [services.production.health.startup]
-path = "/api/healthz"
+path = "/api/auth/login"

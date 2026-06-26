@@ -1,0 +1,213 @@
+Quiero que actúes como un desarrollador Senior Full Stack especializado en Java Spring Boot y React.
+Tengo un proyecto existente que contiene un frontend en React y un backend desarrollado con Node.js/Express.
+NO quiero migrar ni adaptar el backend existente.
+Quiero que desarrolles un backend completamente nuevo desde cero utilizando Java Spring Boot, manteniendo únicamente el frontend existente y adaptándolo para consumir la nueva API.
+El backend de Node.js debe considerarse únicamente como una referencia funcional para entender la lógica de negocio y el flujo de la aplicación.
+No reutilices código del backend anterior.
+No intentes traducir Express a Spring Boot.
+Construye una solución limpia siguiendo las buenas prácticas de Spring.
+Objetivo
+El resultado debe cumplir con los requerimientos de la prueba técnica.
+El frontend existente debe mantenerse siempre que sea posible.
+El backend debe reemplazarse completamente.
+La integración entre ambos debe funcionar correctamente.
+Tecnologías obligatorias
+Backend
+Java 21
+Spring Boot
+Maven
+Spring Web
+Spring Data JPA
+Spring Security
+JWT
+Hibernate Validator
+H2 Database
+Opcional:
+Lombok
+No utilizar:
+Node.js
+Express
+TypeScript
+almacenamiento en memoria
+Base de datos
+Usar exclusivamente H2.
+Configurar:
+application.properties
+consola H2
+Inicializar automáticamente los datos mediante data.sql o un inicializador.
+Crear:
+Administrador
+email: admin@test.com
+
+password: 123
+
+ROLE_ADMIN
+Usuario
+email: usuario@test.com
+
+password: 123
+
+ROLE_USER
+Crear también algunos préstamos de ejemplo.
+Arquitectura
+Crear un nuevo proyecto Spring Boot con una arquitectura por capas.
+Ejemplo:
+backend
+
+ ├── config
+
+ ├── controller
+
+ ├── dto
+
+ ├── entity
+
+ ├── exception
+
+ ├── repository
+
+ ├── security
+
+ ├── service
+
+ └── util
+No implementar una arquitectura hexagonal excesivamente compleja.
+El objetivo es entregar un proyecto limpio y profesional dentro del contexto de una prueba técnica de aproximadamente tres horas.
+Modelo
+Usuario
+Campos mínimos:
+id
+nombre
+email
+password
+role
+Prestamo
+Campos mínimos:
+id
+monto
+plazo
+fechaSolicitud
+estado
+usuario
+Estado:
+PENDIENTE
+
+APROBADO
+
+RECHAZADO
+Seguridad
+Implementar Spring Security.
+Implementar autenticación mediante JWT.
+Crear filtros necesarios.
+Proteger todos los endpoints.
+Solo ADMIN puede:
+aprobar préstamos
+rechazar préstamos
+consultar todas las solicitudes
+USER únicamente puede:
+iniciar sesión
+solicitar préstamo
+consultar únicamente sus propios préstamos
+API
+Implementar como mínimo:
+POST
+/auth/login
+POST
+/loans
+GET
+/loans/my
+GET
+/admin/loans
+PUT
+/admin/loans/{id}/approve
+PUT
+/admin/loans/{id}/reject
+Validaciones
+Usar Hibernate Validator.
+Validar:
+Monto
+obligatorio
+positivo
+Plazo
+obligatorio
+positivo
+Validar también:
+email
+password
+Manejo de errores
+Crear un Global Exception Handler utilizando @RestControllerAdvice.
+Responder correctamente:
+400
+401
+403
+404
+500
+No exponer excepciones internas.
+Frontend
+Mantener el frontend existente.
+No rehacerlo.
+Únicamente realizar los cambios necesarios para consumir la nueva API Spring Boot.
+Mantener las tres pantallas actuales:
+Login
+Usuario
+Administrador
+Mantener el diseño existente.
+Ajustes necesarios
+Revisar completamente el frontend y corregir cualquier incompatibilidad con el nuevo backend.
+Corregir especialmente:
+el formulario de solicitud de préstamo para que permita ingresar un plazo válido (actualmente envía un valor incorrecto);
+el consumo de endpoints;
+la autenticación mediante JWT;
+la protección de rutas según el rol.
+Qué NO implementar
+No agregar funcionalidades que la prueba no solicita.
+No crear:
+Registro de usuarios.
+Recuperación de contraseña.
+Cambio de contraseña.
+Gestión de perfiles.
+Dashboard con estadísticas.
+Notificaciones.
+Historial de operaciones.
+Auditoría avanzada.
+Funcionalidades bancarias adicionales.
+Calidad del código
+Aplicar buenas prácticas:
+Inyección por constructor.
+DTOs para las peticiones y respuestas.
+ResponseEntity.
+Principios SOLID.
+Separación Controller → Service → Repository.
+Código limpio y bien nombrado.
+Eliminar completamente cualquier dependencia relacionada con Node.js o Express del backend.
+README
+Actualizar el README incluyendo:
+Descripción del proyecto.
+Arquitectura utilizada.
+Tecnologías.
+Cómo ejecutar el backend.
+Cómo ejecutar el frontend.
+Credenciales de prueba.
+Endpoints principales.
+Contexto de la prueba
+Esta aplicación corresponde a una prueba técnica con un tiempo aproximado de tres horas.
+Por ello, prioriza una solución funcional, estable y bien organizada sobre una implementación excesivamente compleja.
+Si algún requerimiento secundario (como una implementación avanzada de caché o una arquitectura hexagonal completa) no aporta valor dentro de ese tiempo, opta por una solución sencilla y documenta esa decisión en el README.md.
+Resultado esperado
+Quiero obtener un proyecto con la siguiente estructura:
+Sistema-gestion-prestamos/
+
+├── backend/          ← Nuevo proyecto Spring Boot
+│   ├── src/
+│   ├── pom.xml
+│   ├── application.properties
+│   └── README.md
+│
+├── frontend/         ← React reutilizado y adaptado
+│   ├── src/
+│   ├── package.json
+│   └── README.md
+│
+├── README.md
+└── .gitignore
+El resultado debe parecer una entrega profesional realizada por un desarrollador Full Stack durante una prueba técnica: un backend nuevo y limpio en Spring Boot, un frontend React funcional adaptado a la nueva API y un proyecto coherente, sin restos del backend anterior.
